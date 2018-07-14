@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,11 +24,15 @@ type GraphqlParams struct {
 func MountRouters(r *gin.Engine) {
 	c := r.Group("/content")
 	{
+		// TODO: doc this
 		c.GET("/", func(ctx *gin.Context) {
 			p := &GraphqlParams{}
 			if err := ctx.Bind(p); err != nil {
 				log.Printf("Bind params err=%s", err.Error())
-				// TODO: return error
+				ctx.JSON(http.StatusOK, gin.H{
+					"code":   400,
+					"errors": []string{fmt.Sprintf("Invalid params %s", err.Error())},
+				})
 				return
 			}
 			graphqlParams := graphql.Params{
@@ -37,10 +42,15 @@ func MountRouters(r *gin.Engine) {
 			}
 			result := graphql.Do(graphqlParams)
 			if len(result.Errors) > 0 {
+				errors := []string{}
 				for _, e := range result.Errors {
 					log.Printf("Query err=%s", e.Error())
+					errors = append(errors, fmt.Sprintf("Query err: %s", e.Error()))
 				}
-				// TODO: return error
+				ctx.JSON(http.StatusOK, gin.H{
+					"code":    500,
+					"message": errors,
+				})
 				return
 			}
 			ctx.JSON(http.StatusOK, result)
