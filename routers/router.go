@@ -3,13 +3,11 @@ package routers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/graphql-go/graphql"
 
 	"log"
 
-	"github.com/FrontMage/HelloGithubNavBackend/dao"
 	"github.com/FrontMage/HelloGithubNavBackend/dao/content"
 	"github.com/gin-gonic/gin"
 )
@@ -48,36 +46,12 @@ func MountRouters(r *gin.Engine) {
 					errors = append(errors, fmt.Sprintf("Query err: %s", e.Error()))
 				}
 				ctx.JSON(http.StatusOK, gin.H{
-					"code":    500,
-					"message": errors,
+					"code":   500,
+					"errors": errors,
 				})
 				return
 			}
 			ctx.JSON(http.StatusOK, result)
-		})
-		// TODO: doc this
-		c.GET("/:id", func(ctx *gin.Context) {
-			id, exists := ctx.Params.Get("id")
-			if !exists {
-				// TODO: return error
-				return
-			}
-			idNum, err := strconv.ParseUint(id, 10, 64)
-			if err != nil {
-				// TODO: return error
-				return
-			}
-			content, err := content.Get(idNum)
-			switch err {
-			case dao.ErrRecordNotFound:
-				ctx.JSON(http.StatusNotFound, gin.H{
-					"msg": 404,
-				})
-			case nil:
-				ctx.JSON(http.StatusOK, content)
-			default:
-				ctx.JSON(http.StatusInternalServerError, gin.H{"msg": err.Error()})
-			}
 		})
 	}
 }

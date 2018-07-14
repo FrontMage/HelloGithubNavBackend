@@ -3,6 +3,10 @@ package content
 import (
 	"fmt"
 
+	"log"
+
+	"github.com/FrontMage/HelloGithubNavBackend/dao/category"
+	"github.com/FrontMage/HelloGithubNavBackend/dao/volume"
 	"github.com/graphql-go/graphql"
 )
 
@@ -19,8 +23,8 @@ var graphqlType = graphql.NewObject(graphql.ObjectConfig{
 		"createTime":  &graphql.Field{Type: graphql.String},
 		"updateTime":  &graphql.Field{Type: graphql.String},
 		"status":      &graphql.Field{Type: graphql.Int},
-		// TODO: category
-		// TODO: volume
+		"category":    &graphql.Field{Type: category.GraphqlType},
+		"volume":      &graphql.Field{Type: volume.GraphqlType},
 	},
 })
 
@@ -29,7 +33,7 @@ var rootQuery = graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"contents": &graphql.Field{
 			Type:        graphql.NewList(graphqlType),
-			Description: "Return user list",
+			Description: "Return content list",
 			Args: graphql.FieldConfigArgument{
 				"ids": &graphql.ArgumentConfig{Type: graphql.NewList(graphql.Int)},
 			},
@@ -46,7 +50,7 @@ var rootQuery = graphql.ObjectConfig{
 					}
 					c, err := Get(uint64(parsedID))
 					if err != nil {
-						// TODO: print err
+						log.Printf("Failed to get content by id=%+v", parsedID)
 					}
 					result[idx] = c
 				}
