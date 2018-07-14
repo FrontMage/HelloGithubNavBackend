@@ -3,8 +3,6 @@ package content
 import (
 	"fmt"
 
-	"log"
-
 	"github.com/FrontMage/HelloGithubNavBackend/dao/category"
 	"github.com/FrontMage/HelloGithubNavBackend/dao/volume"
 	"github.com/graphql-go/graphql"
@@ -42,19 +40,15 @@ var rootQuery = graphql.ObjectConfig{
 				if !ok {
 					return nil, fmt.Errorf("Failed to parse ids=%+v %T", p.Args["ids"], p.Args["ids"])
 				}
-				result := make([]*Content, len(ids))
+				parsedIds := make([]uint64, len(ids))
 				for idx, id := range ids {
 					parsedID, ok := id.(int)
 					if !ok {
 						fmt.Printf("Failed to parse id=%+v %T to int\n", id, id)
 					}
-					c, err := Get(uint64(parsedID))
-					if err != nil {
-						log.Printf("Failed to get content by id=%+v", parsedID)
-					}
-					result[idx] = c
+					parsedIds[idx] = uint64(parsedID)
 				}
-				return result, nil
+				return BatchGet(parsedIds)
 			},
 		},
 	},
