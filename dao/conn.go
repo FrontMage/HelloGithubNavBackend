@@ -10,7 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var mysqlURL = flag.String("mysql_url", "root:123456@tcp(localhost:3306)/hello_github", "Specify MySQL URL")
+var mysqlURL = flag.String("mysql_url", "root:9527@tcp(localhost:3306)/hello_github", "Specify MySQL URL")
 var mysqlConnMaxLifetime = flag.String("mysql_conn_max_lifetime", "+60s", "MySQL connection maximum lifetime, format as +60s +30m etc.")
 var mysqlMaxIdleConns = flag.Int("mysql_max_idle_conns", 10, "Maximun idle MySQL connection count")
 var mysqlMaxOpenConns = flag.Int("mysql_max_open_conns", 30, "Maximun opening MySQL connection count")
